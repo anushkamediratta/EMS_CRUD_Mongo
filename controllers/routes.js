@@ -5,7 +5,6 @@ const router=express.Router()
 
 router.get("/",(req,res)=>{
     res.render("home")
-    console.log("hello");
 })
 
 router.get("/add-emp",(req,res)=>{
@@ -28,7 +27,7 @@ router.post("/save-emp", async (req, res) => {
   });
  
 router.get("/show-all-emp",async (req,res)=>{
-git 
+
 try {
     const result = await Employee.find().exec();
     res.render('showEmp', { list: result });
@@ -94,6 +93,7 @@ router.post("/final-update", async (req, res) => {
     console.log(err);
   }
 });
+
 
 
 module.exports=router
