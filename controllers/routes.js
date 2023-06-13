@@ -2,6 +2,7 @@ const express= require('express')
 const Employee=require('../model/employee.model')
 const { log } = require('handlebars')
 const router=express.Router()
+const jwt=require('jsonwebtoken')
 
 router.get("/",(req,res)=>{
     res.render("home")
@@ -74,17 +75,6 @@ router.get("/pre-update/:id", async (req, res) => {
   }
 });
 
-// router.post("/final-update",(req,res)=>{
-//   console.log(req.body)
-//   Employee.findByIdAndUpdate(req.body.id,req.body,{new:true},(err,result)=>{
-//     if(err){
-//       console.log(err)
-//     }else{
-//       res.redirect("/emp/update-all-emp")
-//     }
-//   })
-// })
-
 router.post("/final-update", async (req, res) => {
   try {     
     await Employee.findByIdAndUpdate(req.body.id, req.body, { new: true });
@@ -95,6 +85,57 @@ router.post("/final-update", async (req, res) => {
 });
 
 
-
 module.exports=router
 
+router.post('/api/posts',verifyToken,(req,res)=>{
+
+  jwt.verify(req.token,'hello143',(err,data)=>{
+      if(err){
+          res.sendStatus(403)
+      }else{
+          res.json({
+              message:'Post Created!!!',
+              data:data
+          })
+      }
+  })
+  res.json({
+      message:'Post Created!!!'
+  })
+})
+
+router.post('/login',(req,res)=>{
+  // Mock user
+  const user={
+      id:1,
+      username:'steve',
+      password:'3000'
+  }
+
+  jwt.sign({user:user},'hello143',{expiresIn:'30s'},(err,token)=>{
+      res.json({token})
+  })
+})
+
+//Format of token
+//Authorization: Bearer <Token>
+function verifyToken(req,res,next){
+
+  //Get auth header value
+  const bearerHeader = req.headers['authorization'];
+  //Check if bearer is undefined
+
+  if(typeof bearerHeader!='undefined'){
+      //Split at the space
+      const bearer = bearerHeader.split(' ');
+      // Get toke from the array
+      const bearerToken = bearer[1];
+      //set the token
+      req.token = bearerToken;
+      //next middleware
+      next();
+  }else{
+      res.sendStatus(403)
+  }
+
+}
