@@ -76,6 +76,8 @@ router.get("/pre-update/:id", async (req, res) => {
 });
 
 router.post("/final-update", async (req, res) => {
+
+
   try {     
     await Employee.findByIdAndUpdate(req.body.id, req.body, { new: true });
     res.redirect('/emp/update-all-emp');
